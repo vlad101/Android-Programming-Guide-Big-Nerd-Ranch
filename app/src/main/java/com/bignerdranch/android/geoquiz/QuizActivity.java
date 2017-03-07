@@ -13,6 +13,7 @@ public class QuizActivity extends AppCompatActivity {
 
     private Button mTrueButton;
     private Button mFalseButton;
+    private Button mCheatButton;
     private ImageButton mNextButton;
     private ImageButton mPrevButton;
     private TextView mQuestionTextView;
@@ -90,6 +91,15 @@ public class QuizActivity extends AppCompatActivity {
 
                 // set last question
                 updateQuestion();
+            }
+        });
+        // attach cheat button
+        mCheatButton = (Button) findViewById(R.id.cheat_button);
+        // set click event
+        mCheatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(QuizActivity.this, R.string.judgment_toast, Toast.LENGTH_SHORT).show();
             }
         });
         // set first question
