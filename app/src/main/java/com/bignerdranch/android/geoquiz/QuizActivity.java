@@ -1,5 +1,6 @@
 package com.bignerdranch.android.geoquiz;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,6 +30,7 @@ public class QuizActivity extends AppCompatActivity {
     private double mTotalScore = 0;
     private static final String TAG = "QuizActivity";
     private static final String KEY_INDEX = "index";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,7 +101,9 @@ public class QuizActivity extends AppCompatActivity {
         mCheatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(QuizActivity.this, R.string.judgment_toast, Toast.LENGTH_SHORT).show();
+                Intent intent = CheatActivity.newIntent(QuizActivity.this, mQuestionBank[mCurrentIndex].isAnswerTrue());
+                startActivity(intent);
+                //Toast.makeText(QuizActivity.this, R.string.judgment_toast, Toast.LENGTH_SHORT).show();
             }
         });
         // set first question
