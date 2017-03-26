@@ -16,6 +16,7 @@ public class QuizActivity extends AppCompatActivity {
     private Button mTrueButton;
     private Button mFalseButton;
     private Button mCheatButton;
+    private Button mResetButton;
     private ImageButton mNextButton;
     private ImageButton mPrevButton;
     private TextView mQuestionTextView;
@@ -30,8 +31,11 @@ public class QuizActivity extends AppCompatActivity {
     private int mCurrentIndex = 0;
     private boolean mIsCheater;
     private double mTotalScore = 0;
+    private int mCheatCount = 0;
     private static final String TAG = "QuizActivity";
     private static final String KEY_INDEX = "index";
+    private static final String KEY_CHEATERCOUNT = "cheaterCount";
+    private static final String KEY_ISCHEATER = "isCheater";
     private static final int REQUEST_CODE_CHEAT = 0;
 
 
@@ -41,10 +45,6 @@ public class QuizActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate(Bundle) called");
 
-        // get saved index
-        if(savedInstanceState != null) {
-            mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
-        }
         setContentView(R.layout.activity_quiz);
 
         // attach question text view
@@ -109,9 +109,29 @@ public class QuizActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = CheatActivity.newIntent(QuizActivity.this, mQuestionBank[mCurrentIndex].isAnswerTrue());
                 startActivityForResult(intent, REQUEST_CODE_CHEAT);
-                //Toast.makeText(QuizActivity.this, R.string.judgment_toast, Toast.LENGTH_SHORT).show();
+                if(mCheatCount < 2)
+                    mCheatButton.setEnabled(true);
+                else
+                    mCheatButton.setEnabled(false);
             }
         });
+        // attach reset button
+        mResetButton = (Button) findViewById(R.id.reset_button);
+        // set click event
+        mResetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                resetGame();
+            }
+        });
+        // get saved values
+        if(savedInstanceState != null) {
+            mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
+            mIsCheater = savedInstanceState.getBoolean(KEY_ISCHEATER, false);
+            mCheatCount = savedInstanceState.getInt(KEY_CHEATERCOUNT, 0);
+            if(mCheatCount < 2)
+                mCheatButton.setEnabled(true);
+        }
         // set first question
         updateQuestion();
     }
@@ -162,6 +182,10 @@ public class QuizActivity extends AppCompatActivity {
         Log.i(TAG, "onSaveInstanceState");
         // save index
         savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
+        // save cheat user
+        savedInstanceState.putBoolean(KEY_ISCHEATER, mIsCheater);
+        // save cheat count
+        savedInstanceState.putInt(KEY_CHEATERCOUNT, mCheatCount);
     }
 
     /**
@@ -180,9 +204,10 @@ public class QuizActivity extends AppCompatActivity {
         boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
         int messageResId = 0;
         // is cheater?
-        if(mIsCheater)
+        if(mIsCheater) {
+            mCheatCount++;
             messageResId = R.string.judgment_toast;
-        else {
+        } else {
             // check answer
             if (userPressedTrue == answerIsTrue) {
                 messageResId = R.string.correct_toast;
@@ -226,5 +251,20 @@ public class QuizActivity extends AppCompatActivity {
     private void setAnswerBtnState(boolean state) {
         mTrueButton.setEnabled(state);
         mFalseButton.setEnabled(state);
+    }
+
+    /**
+     * Reset question game.
+     */
+    private void resetGame() {
+        // set current index to beginning
+        mCurrentIndex = 0;
+        // set total score to zero
+        mTotalScore = 0;
+        // set all questions answered
+        for(int i = 0; i < mQuestionBank.length; i++)
+            mQuestionBank[i].setAnswered(false);
+        // update question
+        updateQuestion();
     }
 }

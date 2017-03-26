@@ -1,9 +1,13 @@
 package com.bignerdranch.android.geoquiz;
 
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.ViewAnimationUtils;
+import android.animation.Animator;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -11,6 +15,7 @@ import android.widget.TextView;
 public class CheatActivity extends AppCompatActivity {
 
     private TextView mAnswerTextView;
+    private TextView mApiLevelTextView;
     private Button mShowAnswerBtn;
     private boolean mAnswerIsTrue;
     private static final String EXTRA_ANSWER_IS_TRUE = "com.bignerdranch.android.geoquiz.answer_is_true";
@@ -43,6 +48,10 @@ public class CheatActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cheat);
+        // set api level text view
+        mApiLevelTextView = (TextView) findViewById(R.id.api_level);
+        // set api level
+        setApiLevel();
         // get intent
         mAnswerIsTrue = getIntent().getBooleanExtra(EXTRA_ANSWER_IS_TRUE, false);
         // set answer text view
@@ -58,6 +67,8 @@ public class CheatActivity extends AppCompatActivity {
                 else
                     mAnswerTextView.setText(R.string.false_button);
                 setAnswerShownResult(true);
+                // animate show answer button
+                animateShowAnswerBtn();
             }
         });
 
@@ -72,5 +83,35 @@ public class CheatActivity extends AppCompatActivity {
         Intent data = new Intent();
         data.putExtra(EXTRA_ANSWER_SHOWN, isAnswerShown);
         setResult(RESULT_OK, data);
+    }
+
+    /**
+     * Animate show answer button.
+     */
+    private void animateShowAnswerBtn() {
+        if(Build.VERSION.SDK_INT >=
+                Build.VERSION_CODES.LOLLIPOP) {
+            int cx = mShowAnswerBtn.getWidth() / 2;
+            int cy = mShowAnswerBtn.getHeight() / 2;
+            float radius = mShowAnswerBtn.getWidth();
+            Animator anim = ViewAnimationUtils.createCircularReveal(mShowAnswerBtn, cx, cy, radius, 0);
+            anim.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    mShowAnswerBtn.setVisibility(View.INVISIBLE);
+                }
+            });
+            anim.start();
+        } else
+            mShowAnswerBtn.setVisibility(View.INVISIBLE);
+    }
+
+    /**
+     * Show API Level.
+     */
+    private void setApiLevel() {
+        int apiLevel = Integer.valueOf(Build.VERSION.SDK_INT);
+        mApiLevelTextView.setText("API Level " + apiLevel);
     }
 }

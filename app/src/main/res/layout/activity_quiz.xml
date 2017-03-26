@@ -10,6 +10,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="24dp" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/reset_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:text="@string/reset_button"/>
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -27,6 +40,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/false_button" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
 
         <Button
             android:id="@+id/cheat_button"
